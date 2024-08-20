@@ -1,0 +1,3 @@
+paramiko
+nmap-python
+pwntools
