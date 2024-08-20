@@ -2,6 +2,7 @@ import os
 import paramiko
 import socket
 import time
+import sys  # Import sys to handle exit
 
 def check_username(host, username):
     """Attempts to connect to SSH with the given username and analyzes the response."""
@@ -63,6 +64,19 @@ def main():
     enumerate_users(host, username_file)
 
     print("\n[+] User enumeration completed.")
+    time.sleep(2)  # Adding delay to observe the output
+    end_or_return()  # Call the function to ask the user what to do next
+
+def end_or_return():
+    choice = input("\n[1] Return to Main Menu\n[0] Exit\nSelect an option: ")
+    if choice == '1':
+        from main import main_menu  # Import the main_menu function from main.py
+        main_menu()
+    elif choice == '0':
+        sys.exit()
+    else:
+        print("[!] Invalid selection.")
+        end_or_return()
 
 if __name__ == "__main__":
     main()

