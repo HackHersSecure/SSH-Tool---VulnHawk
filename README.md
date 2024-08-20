@@ -3,6 +3,10 @@
 ## Description
 VulnHawk is a comprehensive toolkit designed for SSH exploitation. It includes features such as brute-force attacks, key injection, user enumeration, and vulnerability scanning.
 
+## Author
+Developed by Tina D'souza
+As a part of final year project!!
+
 ## Disclaimer
 
 **This tool is for educational purposes only.**
