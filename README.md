@@ -7,6 +7,9 @@ VulnHawk is a comprehensive toolkit designed for SSH exploitation. It includes f
 Developed by Tina D'souza
 As a part of final year project!!
 
+## License
+This project is licensed under the BSD 3-Clause License
+
 ## Disclaimer
 
 **This tool is for educational purposes only.**

@@ -38,7 +38,7 @@ def print_disclaimer():
 # Main menu function to navigate between different tool options
 def main_menu():
     print_logo()
-    print_disclaimer()  # Ensure the disclaimer is printed before the menu
+    print_disclaimer()  
     print("\nWelcome to VulnHawk - SSH Exploitation Tool")
     print("\n[1] Common Brute Force Attack")
     print("[2] Custom Brute Force Attack")
